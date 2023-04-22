@@ -1,0 +1,33 @@
+.measure-title {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.measure-title span {
+    margin-left: 5px;
+}
+
+.list-group {
+    list-style: decimal inside;
+    margin-bottom: 0px;
+}
+
+.list-group-item {
+    display: list-item;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+    margin: 20px 0px;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    margin-top: 10px;
+}
