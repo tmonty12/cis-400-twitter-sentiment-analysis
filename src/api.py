@@ -33,52 +33,57 @@ class Twitter():
         elif r.status_code != 200:
             raise requests.exceptions.HTTPError()
         else:
-            r_dict = json.loads(r.text)
-            # If data doesn't exist in response, account is not authorized
-            # to access specific data request
-            if 'data' not in r_dict:
-                return []
-            else:
-                return r_dict['data']
+            return json.loads(r.text)
 
     # Method for retrieving the id of a given username
     def get_user_id(self, username):
-        user = self.api_call(f'users/by/username/{username}')
+        user = self.api_call(f'users/by/username/{username}')['data']
         if not user:
             return Exception(f'User with username: {username} does not exist')
         else:
             return user['id']
 
 
-    def get_mentions(self, user_id, since_id=None):
+    def get_mentions(self, user_id, pagination_token=None, ):
         params = {'max_results': '100'}
-        if since_id:
-            params['since_id'] = since_id
-        return self.api_call(f'users/{user_id}/mentions', params=params)
 
-######################################################################################################
-######################################################################################################
+        if pagination_token:
+            params['pagination_token'] = pagination_token
+        
+        mentions_obj = self.api_call(f'users/{user_id}/mentions', params=params)
+        
+        next_token = None
+        if 'next_token' in mentions_obj['meta']:
+            next_token = mentions_obj['meta']['next_token']
+
+        return (mentions_obj['data'], next_token)
+    
+    def get_mentions_pagination(self, user_id, max_tweets):
+        calls = max_tweets // 100
+        tweets = []
+        pagination_token = None
+        for i in range(calls):
+            mentions, next_token = self.get_mentions(user_id, pagination_token=pagination_token)
+            tweets.extend(mentions)
+            if next_token:
+                pagination_token = next_token
+            else:
+                break
+        
+        return tweets
 
 # Main function of the module for Final Project
-def main(starting_username='kingjames'):
+def main(username='tmonty_12'):
     # Create Twitter class using bearer token for making Twitter API requests
     twitter = Twitter(TWITTER_BEARER_TOKEN)
 
-
     # Get id of starting user given their username
-    starting_user_id = twitter.get_user_id(starting_username)
+    user_id = twitter.get_user_id(username)
 
     #use id to get recent mentions
-    recent_mentions = twitter.get_mentions(starting_user_id)
+    tweets = twitter.get_mentions_pagination(user_id, 1000)
 
-##ALTER
-    print(f"Most recent mentions for user {starting_username}:")
-    for mention in recent_mentions:
-        #print statement to just return tweet text
-        print(f"\t{mention['text']}")
-
-        #print statement to print tweet text, time posted, and author id paramters
-        #print(f"\t{mention['text']} - {mention['created_at']}")
+    print(tweets)
 
 
 if __name__ == '__main__':
