@@ -83,8 +83,6 @@ def main(username='tmonty_12'):
     #use id to get recent mentions
     tweets = twitter.get_mentions_pagination(user_id, 1000)
 
-    print(tweets)
-
 
 if __name__ == '__main__':
    main()
