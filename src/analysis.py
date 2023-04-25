@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 class SentimentAnalysis:
     def __init__(self):
         self.tweets = None
+        self.username = ''
 
     # load tweets from a json file
     def _load(self, path="../data/tweets.json"):
@@ -19,10 +20,11 @@ class SentimentAnalysis:
         self.tweets = pd.json_normalize(data)
 
     # loads tweets passed from Twitter API to class
-    def load_tweets(self, tweets):
+    def load_tweets(self, tweets, username):
         self.tweets = pd.DataFrame({
             'text': tweets
         })
+        self.username = username
 
     # return the top 5 words from a set of tweets
     def top5words(self):
@@ -40,6 +42,17 @@ class SentimentAnalysis:
     def reputation_score(self):
         self.tweets['reputationscore'] = self.tweets['text'].apply(SentimentAnalysis._reputation_score)
         return self.tweets['reputationscore'].mean()
+    
+    def top5usernames(self):
+        self.tweets['usernames'] = self.tweets['text'].apply(SentimentAnalysis.grabUsernames)
+        freqDist = FreqDist()
+        for usernames in self.tweets['usernames'].values:
+            for username in usernames:
+                freqDist[username.lower()] += 1
+        print(self.username)
+        freqDist.pop(self.username)
+        return [word[0] for word in freqDist.most_common(5)]
+                
 
     # compute the reputation score for a tweet.
     # Reputation score = (pos-neg)*comp
@@ -60,3 +73,7 @@ class SentimentAnalysis:
         # remove non-letters
         s = re.sub(r'[^a-zA-Z\s]', '', s)
         return s
+    
+    @staticmethod
+    def grabUsernames(s):
+        return re.findall(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)', s)

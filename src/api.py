@@ -7,6 +7,8 @@ import requests
 import json
 import time
 
+# from analysis import SentimentAnalysis
+
 TWITTER_BEARER_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAP1GlQEAAAAAr4QwhuBnlJtvQBM5%2FpnXgbCFmtI%3D69hujxQ40RCsLqV9Qz8abUVXDIKvgfwweM8YLfhj1NRBfaVDe8'
 
 
@@ -74,7 +76,7 @@ class Twitter():
         return tweets
 
 # Main function of the module for Final Project
-def main(username='realdonaldtrump'):
+def main(username='therock'):
     # Create Twitter class using bearer token for making Twitter API requests
     twitter = Twitter(TWITTER_BEARER_TOKEN)
 
@@ -83,3 +85,9 @@ def main(username='realdonaldtrump'):
 
     #use id to get recent mentions
     tweets = twitter.get_mentions_pagination(user_id, 1000)
+
+    s = SentimentAnalysis()
+    s.load_tweets(tweets)
+    s.get_usernames()
+
+# main()

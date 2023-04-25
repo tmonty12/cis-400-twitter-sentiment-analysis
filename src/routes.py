@@ -38,7 +38,9 @@ def index():
     form = SearchUserForm()
     username = None
     top5words = []
+    top5usernames = []
     sentiment_score = 1
+    num_tweets = 0
 
     if form.validate_on_submit():
         try:
@@ -54,8 +56,10 @@ def index():
         else:
             username = form.username.data
             tweets = twitter.get_mentions_pagination(user_id, 1000)
-            s.load_tweets(tweets)
+            num_tweets = len(tweets)
+            s.load_tweets(tweets, username)
             top5words = s.top5words()
+            top5usernames = s.top5usernames()
             sentiment_score = round(9 * s.reputation_score() + 1, 0)
 
-    return render_template('index.html', form=form, username=username, sentiment_score=sentiment_score, sentiment_color=sentiment_score_color[sentiment_score], sentiment_score_description=sentiment_score_description, topics=top5words, topics_description=topics_description)
+    return render_template('index.html', form=form, username=username, sentiment_score=sentiment_score, sentiment_color=sentiment_score_color[sentiment_score], sentiment_score_description=sentiment_score_description, topics=top5words, usernames=top5usernames, topics_description=topics_description, num_tweets=num_tweets)
