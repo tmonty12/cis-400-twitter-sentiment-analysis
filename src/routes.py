@@ -4,7 +4,8 @@ from src.forms import SearchUserForm
 from src.api import Twitter
 from src.analysis import SentimentAnalysis
 
-sentiment_score_color = {
+sentiment_score_colors = {
+    0: '#FF0000',
     1: '#FF0000',
     2: '#FF1E00',
     3: '#FF3C00',
@@ -17,10 +18,16 @@ sentiment_score_color = {
     10: '#00FF00'
 }
 
+
+def sentiment_score_color(score):
+    return sentiment_score_colors[score // 10]
+
+
 sentiment_score_description = "Measures the sentiment of tweets the user is mentioned in to display an overall score on other's perception of the target user."
 topics_description = 'Top topics in tweets mentioning user'
 
-twitter = Twitter('AAAAAAAAAAAAAAAAAAAAAP1GlQEAAAAAr4QwhuBnlJtvQBM5%2FpnXgbCFmtI%3D69hujxQ40RCsLqV9Qz8abUVXDIKvgfwweM8YLfhj1NRBfaVDe8')
+twitter = Twitter(
+    'AAAAAAAAAAAAAAAAAAAAAP1GlQEAAAAAr4QwhuBnlJtvQBM5%2FpnXgbCFmtI%3D69hujxQ40RCsLqV9Qz8abUVXDIKvgfwweM8YLfhj1NRBfaVDe8')
 s = SentimentAnalysis()
 
 elon = {
@@ -32,6 +39,7 @@ rock = {
     'sentiment_score': 8,
     'topics': ['Teramana', 'Zoa', 'XFL', 'Under Armour', 'Jumanji']
 }
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -60,6 +68,9 @@ def index():
             s.load_tweets(tweets, username)
             top5words = s.top5words()
             top5usernames = s.top5usernames()
-            sentiment_score = round(9 * s.reputation_score() + 1, 0)
+            sentiment_score = round(s.reputation_score(), 0)
 
-    return render_template('index.html', form=form, username=username, sentiment_score=sentiment_score, sentiment_color=sentiment_score_color[sentiment_score], sentiment_score_description=sentiment_score_description, topics=top5words, usernames=top5usernames, topics_description=topics_description, num_tweets=num_tweets)
+    return render_template('index.html', form=form, username=username, sentiment_score=sentiment_score,
+                           sentiment_color=sentiment_score_color(sentiment_score),
+                           sentiment_score_description=sentiment_score_description, topics=top5words,
+                           topics_description=topics_description)
