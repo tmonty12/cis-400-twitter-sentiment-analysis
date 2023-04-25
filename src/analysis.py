@@ -8,17 +8,21 @@ from nltk.probability import FreqDist
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 
-
 class SentimentAnalysis:
     def __init__(self):
         self.tweets = None
-        self._load()
 
     # load tweets from a json file
-    def _load(self, path="data/tweets.json"):
+    def _load(self, path="../data/tweets.json"):
         with open(path, "r") as f:
             data = json.loads(f.read())['data']
         self.tweets = pd.json_normalize(data)
+
+    # loads tweets passed from Twitter API to class
+    def load_tweets(self, tweets):
+        self.tweets = pd.DataFrame({
+            'text': tweets
+        })
 
     # return the top 5 words from a set of tweets
     def top5words(self):
@@ -52,12 +56,7 @@ class SentimentAnalysis:
         # remove rt notation and links
         s = str(s).lower().replace('rt ', '')
         s = re.sub(r'https?:\/\/\S+', '', s)
+        s = re.sub(r'@\w{1,15}(?!\w)', '', s)
         # remove non-letters
         s = re.sub(r'[^a-zA-Z\s]', '', s)
         return s
-
-# testing
-
-# sa = SentimentAnalysis()
-# print(sa.top5words())
-# print(sa.reputation_score())

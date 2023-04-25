@@ -37,11 +37,12 @@ class Twitter():
 
     # Method for retrieving the id of a given username
     def get_user_id(self, username):
-        user = self.api_call(f'users/by/username/{username}')['data']
-        if not user:
-            return Exception(f'User with username: {username} does not exist')
+        user = self.api_call(f'users/by/username/{username}')
+        
+        if not 'data' in user:
+            raise Exception(f'User with username: {username} does not exist')
         else:
-            return user['id']
+            return user['data']['id']
 
 
     def get_mentions(self, user_id, pagination_token=None, ):
@@ -64,7 +65,7 @@ class Twitter():
         pagination_token = None
         for i in range(calls):
             mentions, next_token = self.get_mentions(user_id, pagination_token=pagination_token)
-            tweets.extend(mentions)
+            tweets.extend([tweet['text'] for tweet in mentions])
             if next_token:
                 pagination_token = next_token
             else:
@@ -73,7 +74,7 @@ class Twitter():
         return tweets
 
 # Main function of the module for Final Project
-def main(username='tmonty_12'):
+def main(username='realdonaldtrump'):
     # Create Twitter class using bearer token for making Twitter API requests
     twitter = Twitter(TWITTER_BEARER_TOKEN)
 
@@ -82,7 +83,3 @@ def main(username='tmonty_12'):
 
     #use id to get recent mentions
     tweets = twitter.get_mentions_pagination(user_id, 1000)
-
-
-if __name__ == '__main__':
-   main()
