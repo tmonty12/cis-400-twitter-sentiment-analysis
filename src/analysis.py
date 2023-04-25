@@ -56,7 +56,7 @@ class SentimentAnalysis:
     # reputation score of all tweets referencing the user
     def reputation_score(self):
         self.tweets['reputationscore'] = self.tweets['text'].apply(SentimentAnalysis._reputation_score)
-        return self.tweets['reputationscore'].mean()
+        return SentimentAnalysis.map_score(self.tweets['reputationscore'].mean())
 
     # compute the reputation score for a tweet.
     # Score range [-1, 1]
@@ -64,12 +64,12 @@ class SentimentAnalysis:
     def _reputation_score(s):
         analyzer = SentimentIntensityAnalyzer()
         scores = analyzer.polarity_scores(s)
-        return (scores['pos']-scores['neg'])*scores['compound']
+        return scores['compound']
 
     @staticmethod
     def map_score(score):
         mn1, mx1 = -0.2, 0.2
-        mn2, mx2 = 1, 10
+        mn2, mx2 = 1, 100
         c = SentimentAnalysis.clamp(mn2, mx2)
         return c((mx2 - mn2) * (score - mn1) / (mx1 - mn1) + mn2)
 

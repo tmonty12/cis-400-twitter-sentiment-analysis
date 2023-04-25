@@ -19,11 +19,11 @@
                 </div>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
-                    aria-valuemin="0" aria-valuemax="100" style="width:{{ sentiment_score * 10 }}%;background-color:{{ sentiment_color }}">
-                    {% if sentiment_score >= 7 %}
-                        <span style="color:black">{{ sentiment_score }} / 10</span>
+                    aria-valuemin="0" aria-valuemax="100" style="width:{{ sentiment_score }}%;background-color:{{ sentiment_color }}">
+                    {% if sentiment_score >= 70 %}
+                        <span style="color:black">{{ sentiment_score }} / 100</span>
                     {% else %}
-                        <span>{{ sentiment_score }} / 10</span>
+                        <span>{{ sentiment_score }} / 100</span>
                     {% endif %}
                     </div>
                 </div>
