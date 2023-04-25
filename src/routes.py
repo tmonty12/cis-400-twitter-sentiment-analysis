@@ -3,6 +3,7 @@ from src import app
 from src.forms import SearchUserForm
 from src.api import Twitter
 from src.analysis import SentimentAnalysis
+import time
 
 sentiment_score_colors = {
     0: '#FF0000',
@@ -30,17 +31,6 @@ twitter = Twitter(
     'AAAAAAAAAAAAAAAAAAAAAP1GlQEAAAAAr4QwhuBnlJtvQBM5%2FpnXgbCFmtI%3D69hujxQ40RCsLqV9Qz8abUVXDIKvgfwweM8YLfhj1NRBfaVDe8')
 s = SentimentAnalysis()
 
-elon = {
-    'sentiment_score': 2,
-    'topics': ['Tesla', 'Twitter', 'Spacex', 'Mars', 'Memes']
-}
-
-rock = {
-    'sentiment_score': 8,
-    'topics': ['Teramana', 'Zoa', 'XFL', 'Under Armour', 'Jumanji']
-}
-
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = SearchUserForm()
@@ -63,14 +53,32 @@ def index():
             username = None
         else:
             username = form.username.data
+            t1 = time.time()
+            print(f'Grabbing tweet mentions for @{username}')
             tweets = twitter.get_mentions_pagination(user_id, 1000)
+            t2 = time.time()
+            print(f'Grabbing tweets took {t2 - t1} seconds')
             num_tweets = len(tweets)
+            print(f'Loading tweets into sentiment analzer')
             s.load_tweets(tweets, username)
+            t3 = time.time()
+            print(f'Loading tweets took {t3 - t2} seconds')
+            print(f'Grabbing the top 5 topics of the tweets')
             top5words = s.top5words()
+            t4 = time.time()
+            print(f'Grabbing the top 5 topics took {t4 - t3} seconds')
+            print(f'Grabbing the top 5 usernames from the tweets')
             top5usernames = s.top5usernames()
+            t5 = time.time()
+            print(f'Grabbing the top 5 usernames took {t5 - t4} seconds')
+            print(f'Analyzing the sentiment of the tweets')
             sentiment_score = round(s.reputation_score(), 0)
+            t6 = time.time()
+            print(f'Analyzing the sentiment took {t6 - t5} seconds\n')
 
     return render_template('index.html', form=form, username=username, sentiment_score=sentiment_score,
                            sentiment_color=sentiment_score_color(sentiment_score),
                            sentiment_score_description=sentiment_score_description, topics=top5words,
-                           topics_description=topics_description)
+                           topics_description=topics_description,
+                           usernames=top5usernames,
+                           num_tweets=num_tweets)

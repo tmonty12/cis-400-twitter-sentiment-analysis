@@ -11,7 +11,6 @@ from nltk.tag.stanford import StanfordNERTagger
 
 import contractions
 
-
 class SentimentAnalysis:
     def __init__(self):
         self.tweets = None
@@ -66,8 +65,7 @@ class SentimentAnalysis:
         for usernames in self.tweets['usernames'].values:
             for username in usernames:
                 freqDist[username.lower()] += 1
-        print(self.username)
-        freqDist.pop(self.username)
+        freqDist.pop(self.username.lower())
         return [word[0] for word in freqDist.most_common(5)]
 
     # compute the reputation score for a tweet.
