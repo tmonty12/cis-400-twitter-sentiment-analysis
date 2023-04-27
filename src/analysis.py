@@ -65,7 +65,8 @@ class SentimentAnalysis:
         for usernames in self.tweets['usernames'].values:
             for username in usernames:
                 freqDist[username.lower()] += 1
-        freqDist.pop(self.username.lower())
+        if self.username.lower() in freqDist:
+            freqDist.pop(self.username.lower())
         return [word[0] for word in freqDist.most_common(5)]
 
     # compute the reputation score for a tweet.

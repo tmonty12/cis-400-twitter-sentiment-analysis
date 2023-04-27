@@ -26,6 +26,7 @@ def sentiment_score_color(score):
 
 sentiment_score_description = "Measures the sentiment of tweets the user is mentioned in to display an overall score on other's perception of the target user."
 topics_description = 'Top topics in tweets mentioning user'
+usernames_description = 'Top usernames also mentioned in tweets mentioning user not including the user themselve'
 
 twitter = Twitter(
     'AAAAAAAAAAAAAAAAAAAAAP1GlQEAAAAAr4QwhuBnlJtvQBM5%2FpnXgbCFmtI%3D69hujxQ40RCsLqV9Qz8abUVXDIKvgfwweM8YLfhj1NRBfaVDe8')
@@ -81,4 +82,5 @@ def index():
                            sentiment_score_description=sentiment_score_description, topics=top5words,
                            topics_description=topics_description,
                            usernames=top5usernames,
-                           num_tweets=num_tweets)
+                           num_tweets=num_tweets,
+                           usernames_description=usernames_description)
